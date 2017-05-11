@@ -1,5 +1,5 @@
 //...baixar todos os pacotes presentes no https://tiipos.github.io/2017.js.arquivos_texto.html
-
+var fs = require('fs');
 var arquivo = process.argv[2];
 var separador = arquivo.split(".");
 var extensão = separador[separador.length -1];//nome da extensão do arquivo
@@ -15,24 +15,9 @@ else{
 	//abrir arquivo
 	var json = lerJSONComRequire(txt);
 	var txto = json;
-	txto.intervalos[0]; 
 
 	//Para pegar a cadeia inteira, já que se trata de um array:
-	txto.intervalos.join(",");
-
-	for (var i in txto.intervalos) {
-
-   		if(txto.intervalos[i-1] == txto.intervalos[i]-1){
-		console.log(txto.intervalos[i]); //envia pro console os valores
- 		}
- 		else{
- 			if(txto.intervalos[i-1] != txto.intervalos[i]-1){
- 				console.log("-------------- ");
- 				console.log(txto.intervalos[i]);
- 			}
- 			else{console.log(txto.intervalos[i]);}
- 			}
- 		}
+	intervalo(txto.intervalos);
 	}
 	else if(extensão.toString() == "xml"){
 		var variaveis;
@@ -42,36 +27,18 @@ else{
 			//ex: alert(array[0]);
 
 			var numerodavez1 = variaveis.split(",");
-			var i = 0;
-			for(i; variaveis.length; i++){
-				console.log(numerodavez1[i]);
-				if(variaveis[i-1] == variaveis[i]-1){
-					console.log("-------------------");
-				}
-				else if(numerodavez1[i] == 150) break;//erro ->variaveis.length(não funciona)
-			}
+			intervalo(numerodavez1);
 		});
 	}
 
 	else if(extensão.toString() == "csv"){
 		//necessário para funcionamento da função, fs.readFile()...
-		var fs = require('fs');
 		var csv = require('csv-string');
 		var resultado;
 
-			fs.readFile(txt, 'utf8', (err, data) => {
-			    resultado = csv.parse(data);
-			    var l = 0;
-			    for(l; resultado.length; l++){
-			    	if(resultado[0][l-1] == resultado[0][l]-1){
-			    	console.log(resultado[0][l]);
-			    	}
-			    	else if(resultado[0][l-1] != resultado[0][l]-1){
-			    		console.log("---");
-			    		console.log(resultado[0][l]);	
-			    	}
-			    	else if(resultado[0][l] == 150) break;//erro p/ stop
-			    }
+			fs.readFile(txt, 'utf8', function(err, data) {
+			    resultado = csv.parse(data)[0];
+			    intervalo(resultado);
 			});	
 	}
 }
@@ -94,10 +61,37 @@ function lerJSONComRequire(txt) {
 }
 
 function lerXMLComXml2Js(arquivo, funcao) {
-    var fs = require('fs');
     var xmlParser = require('xml2js').parseString;
 
     fs.readFile(arquivo, function(err, data) {
         xmlParser(data, funcao);
     });
+}
+
+function intervalo(intervalos){
+	var inicial, finall, intervalo;
+	intervalo = 0;
+	var resultado = [];
+	inicial= intervalos[0];
+	for (var i = 0; i < intervalos.length; i++) {
+   		if(i==intervalos.length-1){
+			finall=intervalos[i];
+				resultado[intervalo] = "["+inicial+"-"+finall+"]";
+ 				console.log(resultado[intervalo]);
+		}else if((intervalos[i+1] != intervalos[i]+1)){
+ 				finall=intervalos[i];
+				if(parseInt(inicial)!=parseInt(finall)){
+						resultado[intervalo] = "["+inicial+"-"+finall+"]";
+				}else{
+					resultado[intervalo] = "["+finall+"]";
+				}
+ 				console.log(resultado[intervalo]);
+				intervalo++;
+ 				inicial = intervalos[i+1];
+		}
+ 	}
+	fs.writeFile('resultado.json', JSON.stringify(resultado), function (err) {
+		if (err) return console.log(err);
+		console.log('Arquivo gravado!');
+	});
 }
