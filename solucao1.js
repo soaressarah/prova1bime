@@ -1,4 +1,4 @@
-//baixar todos os pacotes presentes no https://tiipos.github.io/2017.js.arquivos_texto.html
+//...baixar todos os pacotes presentes no https://tiipos.github.io/2017.js.arquivos_texto.html
 
 var arquivo = process.argv[2];
 var separador = arquivo.split(".");
@@ -14,13 +14,10 @@ else{
 	if(extensão.toString() == "json"){
 	//abrir arquivo
 	var json = lerJSONComRequire(txt);
-
 	var txto = json;
-	//pegar o 1 valor
-	txto.intervalos[0]; //100
-	//var separador = txto.split(",");
+	txto.intervalos[0]; 
 
-	//Para pegar a cadeia inteira, você pode simplesmente concatenar tudo usando join com seu concatenador, já que se trata de um array:
+	//Para pegar a cadeia inteira, já que se trata de um array:
 	txto.intervalos.join(",");
 
 	for (var i in txto.intervalos) {
@@ -34,61 +31,61 @@ else{
  				console.log(txto.intervalos[i]);
  			}
  			else{console.log(txto.intervalos[i]);}
- 			//console.log("-------------- ");
  			}
  		}
 	}
 	else if(extensão.toString() == "xml"){
-	    
-		//ler arquivo xml
+		var variaveis;
 		lerXMLComXml2Js(txt, function(err, result) {
-			
-			console.log(result.intervalos.inter[0].valores[0]);
-			console.log("------------");
-			var variaveis = result.intervalos.inter[0].valores[0];
-			txto.intervalos[0];
-			txto.intervalos.join(",");
+			variaveis = result.intervalos.inter[0].valores[0].toString();
+			//var vetor = [variaveis];//um vetor de variaveis
+			//ex: alert(array[0]);
+
+			var numerodavez1 = variaveis.split(",");
+			var i = 0;
+			for(i; variaveis.length; i++){
+				console.log(numerodavez1[i]);
+				if(variaveis[i-1] == variaveis[i]-1){
+					console.log("-------------------");
+				}
+				else if(numerodavez1[i] == 150) break;//erro ->variaveis.length(não funciona)
+			}
 		});
-		
-		//var txto = variaveis;
-		
-		//txto.intervalos[0]; //100
-		
-
-		//Para pegar a cadeia inteira, você pode simplesmente concatenar tudo usando join com seu concatenador, já que se trata de um array:
-		/*txto.intervalos.join(",");
-
-		for (var i in txto.intervalos) {
-
-   		if(txto.intervalos[i-1] == txto.intervalos[i]-1){
-		console.log(txto.intervalos[i]); //envia pro console os valores
- 		}
- 		else{
- 			if(txto.intervalos[i-1] != txto.intervalos[i]-1){
- 				console.log("-------------- ");
- 				console.log(txto.intervalos[i]);
- 			}
- 			else{console.log(txto.intervalos[i]);}
- 			//console.log("-------------- ");
- 			}
- 		}*/
 	}
-	
-	else if(extensão.toString() == "csv"){
-		console.log("arquivo csv");
-	}		
-}
 
-	/*
+	else if(extensão.toString() == "csv"){
+		//necessário para funcionamento da função, fs.readFile()...
+		var fs = require('fs');
+		var csv = require('csv-string');
+		var resultado;
+
+			fs.readFile(txt, 'utf8', (err, data) => {
+			    resultado = csv.parse(data);
+			    var l = 0;
+			    for(l; resultado.length; l++){
+			    	if(resultado[0][l-1] == resultado[0][l]-1){
+			    	console.log(resultado[0][l]);
+			    	}
+			    	else if(resultado[0][l-1] != resultado[0][l]-1){
+			    		console.log("---");
+			    		console.log(resultado[0][l]);	
+			    	}
+			    	else if(resultado[0][l] == 150) break;//erro p/ stop
+			    }
+			});	
+	}
+}
+/*
 	vai ficar assim
-	100, 101, 102, 103, 104, 105, (ok)
+	(json, xml, csv(falta))
+	100, 101, 102, 103, 104, 105, 
 	------------------
 	110, 111,
 	------------------
 	113,114, 115,
 	-----------------
 	150
-	*/
+*/
 
 function lerJSONComRequire(txt) {
     var json = require(txt);
